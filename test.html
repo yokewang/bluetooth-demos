@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button class="btns">连接蓝牙</button>
+    <script>
+
+        var bluetoothDevice;
+        let btn = document.querySelector('.btns')
+        btn.addEventListener('click', getBlueObject)
+        // 获取蓝牙对象
+        // 00001101-0000-1000-8000-00805f9b34fb
+        // 0000ffe0-0000-1000-8000-00805f9b34fb
+        function getBlueObject() {
+            bluetoothDevice = null;
+            navigator.bluetooth.requestDevice({
+                // 如果你指定了 services的uuid,即指定了 服务的uuid,就不需要 optionalServices这个参数了
+                filters: [{
+                    services: ['00001101-0000-1000-8000-00805f9b34fb']
+                }]
+            }).then(device => {
+                bluetoothDevice = device
+                // 监听蓝牙蓝牙断开
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected)
+                connect()
+            }).catch(err => {
+                console.log('获取蓝牙失败');
+            })
+        }
+        // 开始连接
+        function connect() {
+            exponentialBackoff(3 /* 最大重试次数 */, 2 /* 秒延迟 */,
+                function toTry() {
+                    return bluetoothDevice.gatt.connect();
+                },
+                function success(server) {
+                    getServer(server)
+                },
+                function fail() {
+                    console.log('连接失败');
+                });
+        }
+        // 获取服务\特征,监听蓝牙数据返回
+        function getServer(server) {
+            console.log('连接成功', server);
+            server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb').then(service => {
+                console.log('获取全部服务信息成功,开始获取特征信息', service)
+                return service.getCharacteristic('00001101-0000-1000-8000-00805f9b34fb')
+            }).then(characteristic => {
+                return characteristic.startNotifications().then(_ => {
+                    characteristic.addEventListener('characteristicvaluechanged',
+                        handleNotifications);
+                });
+            }).catch(err => {
+                console.log('获取服务失败', err);
+            })
+        }
+        function onDisconnected(max, delay, status) {
+            console.log('重连中');
+            connect()
+        }
+        function exponentialBackoff(max, delay, toTry, success, fail) {
+            toTry().then(result => success(result))
+                .catch(_ => {
+                    if (max === 0) {
+                        return fail();
+                    }
+                    setTimeout(function () {
+                        exponentialBackoff(--max, delay * 2, toTry, success, fail);
+                    }, delay * 1000);
+                });
+        }
+        function handleNotifications(event) {
+            let value = event.target.value;
+            let a = [];
+            for (let i = 0; i < value.byteLength; i++) {
+                a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+            }
+            console.log('> ' + a.join(' '));
+        }
+
+
+    </script>
+</body>
+
+</html>
