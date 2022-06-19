@@ -20,13 +20,11 @@
         // 0000ffe0-0000-1000-8000-00805f9b34fb
         function getBlueObject() {
             bluetoothDevice = null;
-            navigator.bluetooth.requestDevice({
-                // 如果你指定了 services的uuid,即指定了 服务的uuid,就不需要 optionalServices这个参数了
-                filters: [{
-                    services: ['4fafc201-1fb5-459e-8fcc-c5c9c331914b']
-                }]
-            }).then(device => {
+            var options = {"acceptAllDevices": true}
+}
+            navigator.bluetooth.requestDevice(options).then(device => {
                 bluetoothDevice = device
+                console.log(device);
                 // 监听蓝牙蓝牙断开
                 bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected)
                 connect()
