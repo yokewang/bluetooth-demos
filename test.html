@@ -21,7 +21,7 @@
         function getBlueObject() {
             bluetoothDevice = null;
             var options = {"acceptAllDevices": true}
-}
+
             navigator.bluetooth.requestDevice(options).then(device => {
                 bluetoothDevice = device
                 console.log(device);
