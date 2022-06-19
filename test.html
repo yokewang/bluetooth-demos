@@ -58,7 +58,8 @@
                 var enc = new TextEncoder(); 
                 var buf = enc.encode('hello ' + new Date());
                 return characteristic.writeValue(buf).then(_ => {
-                    console.log('write successfully');    
+                    console.log('write successfully');   
+                    alert('write successfully!');
                 });
 //                 return characteristic.startNotifications().then(_ => {
 //                     characteristic.addEventListener('characteristicvaluechanged',
