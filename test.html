@@ -18,9 +18,11 @@
         // 获取蓝牙对象
         // 00001101-0000-1000-8000-00805f9b34fb
         // 0000ffe0-0000-1000-8000-00805f9b34fb
+        //4fafc201-1fb5-459e-8fcc-c5c9c331914b
+        //beb5483e-36e1-4688-b7f5-ea07361b26a8
         function getBlueObject() {
             bluetoothDevice = null;
-            var options = {"acceptAllDevices": true}
+            var options = {"acceptAllDevices": true, optionalServices: ['4fafc201-1fb5-459e-8fcc-c5c9c331914b','beb5483e-36e1-4688-b7f5-ea07361b26a8']}
 
             navigator.bluetooth.requestDevice(options).then(device => {
                 bluetoothDevice = device
