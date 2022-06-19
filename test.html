@@ -55,7 +55,9 @@
                 return service.getCharacteristic('beb5483e-36e1-4688-b7f5-ea07361b26a8')
             }).then(characteristic => {
                 console.log('characteristic:',characteristic);
-                return characteristic.writeValue('hello ' + new Date()).then(_ => {
+                var enc = new TextEncoder(); 
+                var buf = enc.encode('hello ' + new Date());
+                return characteristic.writeValue(buf).then(_ => {
                     console.log('write successfully');    
                 });
 //                 return characteristic.startNotifications().then(_ => {
