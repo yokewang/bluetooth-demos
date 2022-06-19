@@ -54,10 +54,11 @@
                 console.log('获取全部服务信息成功,开始获取特征信息', service)
                 return service.getCharacteristic('beb5483e-36e1-4688-b7f5-ea07361b26a8')
             }).then(characteristic => {
-                return characteristic.startNotifications().then(_ => {
-                    characteristic.addEventListener('characteristicvaluechanged',
-                        handleNotifications);
-                });
+                console.log('characteristic:',characteristic);
+//                 return characteristic.startNotifications().then(_ => {
+//                     characteristic.addEventListener('characteristicvaluechanged',
+//                         handleNotifications);
+//                 });
             }).catch(err => {
                 console.log('获取服务失败', err);
             })
@@ -84,6 +85,10 @@
                 a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
             }
             console.log('> ' + a.join(' '));
+        }
+        function handleWrite(event) {
+            
+            console.log('write Event:', event);
         }
 
 
